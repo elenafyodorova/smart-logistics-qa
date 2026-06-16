@@ -17,11 +17,11 @@
 
 ## Выполненные задания
 
-- Блок 1 — [Тестирование требований (ЭТрН)](./block-1-etrn/README.md)
-- Блок 2 — [Проектирование тестов (AI Prompting & Review)](./block-2-ai-prompting/README.md)
-- Блок 3 — [Анализ данных (SQL)](./block-3-sql/README.md)
-- Блок 4 — [Тестирование API](./block-4-api/README.md)
-- Блок 5 — [Базовые вопросы по 1С](./block-5-1C/README.md)
+- ✅ Блок 1 — [Тестирование требований (ЭТрН)](./block-1-etrn/README.md)
+- ✅ Блок 2 — [Проектирование тестов (AI Prompting & Review)](./block-2-ai-prompting/README.md)
+- ✅ Блок 3 — [Анализ данных (SQL)](./block-3-sql/README.md)
+- ✅ Блок 4 — [Тестирование API](./block-4-api/README.md)
+- ⚪ Блок 5 — [Базовые вопросы по 1С](./block-5-1C/README.md)
 
 ## Использование AI
 
