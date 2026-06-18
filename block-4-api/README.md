@@ -34,4 +34,4 @@ Swagger / OpenAPI документация: `http://localhost:8000/docs`
 `assets/Smart-Logistics-Local.postman_environment.json`
 
 
-![Тестовый стенд API](./assets/test-stand.png)
+![Тестовый стенд API](https://raw.githubusercontent.com/elenafyodorova/smart-logistics-qa/main/assets/test-stand.png)
