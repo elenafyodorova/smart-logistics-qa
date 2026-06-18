@@ -1,0 +1,392 @@
+{
+  "info": {
+    "name": "Smart Logistics — Orders API",
+    "_postman_id": "sl-orders-api-v2",
+    "description": "Тестовый стенд для практики Postman — контроллер /api/v2/orders.\nСтенд: http://localhost:8000 | БД: localhost:5434",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000/api/v2", "type": "string" },
+    { "key": "orderId", "value": "1", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "── HAPPY PATH ──────────────────",
+      "item": [
+
+        {
+          "name": "GET /orders — список заказов",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Ответ — массив', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.be.an('array');",
+              "});",
+              "pm.test('Каждый заказ содержит id и status', () => {",
+              "  pm.response.json().forEach(o => {",
+              "    pm.expect(o).to.have.property('id');",
+              "    pm.expect(o).to.have.property('status');",
+              "  });",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "GET /orders/:id — получить заказ",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Заказ содержит обязательные поля', () => {",
+              "  const o = pm.response.json();",
+              "  ['id','customerId','status','orderType','weightKg','loadingDate'].forEach(f => {",
+              "    pm.expect(o).to.have.property(f);",
+              "  });",
+              "});",
+              "pm.test('deletedAt равен null', () => {",
+              "  pm.expect(pm.response.json().deletedAt).to.be.null;",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        },
+
+        {
+          "name": "POST /orders — создать заказ",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('Новый заказ содержит id', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('id');",
+              "  pm.collectionVariables.set('newOrderId', body.id);",
+              "});",
+              "pm.test('status = new', () => {",
+              "  pm.expect(pm.response.json().status).to.eql('new');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"carrierId\": 2,\n  \"driverId\": 3,\n  \"originCityId\": 1,\n  \"destinationCityId\": 7,\n  \"weightKg\": 7500,\n  \"volumeM3\": 35,\n  \"orderType\": \"auction\",\n  \"loadingDate\": \"2026-07-01\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "PUT /orders/:id — обновить статус",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('status обновился до in_transit', () => {",
+              "  pm.expect(pm.response.json().status).to.eql('in_transit');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_transit\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        },
+
+        {
+          "name": "DELETE /orders/:id — удалить заказ",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('204 No Content', () => pm.response.to.have.status(204));",
+              "pm.test('Тело ответа пустое', () => {",
+              "  pm.expect(pm.response.text()).to.be.empty;",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        },
+
+        {
+          "name": "HEAD /orders/:id — проверить существование",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('204 No Content', () => pm.response.to.have.status(204));",
+              "pm.test('Тело ответа пустое', () => {",
+              "  pm.expect(pm.response.text()).to.be.empty;",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "HEAD",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders/2", "host": ["{{baseUrl}}"], "path": ["orders", "2"] }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "── НЕГАТИВНЫЕ СЦЕНАРИИ ─────────",
+      "item": [
+
+        {
+          "name": "GET /orders/999 — 404 Not Found",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+              "pm.test('Формат ошибки: error.code + error.message', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property('error');",
+              "  pm.expect(body.error).to.have.property('code');",
+              "  pm.expect(body.error).to.have.property('message');",
+              "  pm.expect(body.error.code).to.eql('notFound');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders/999", "host": ["{{baseUrl}}"], "path": ["orders", "999"] }
+          }
+        },
+
+        {
+          "name": "GET /orders/:id — 410 Gone (после DELETE)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('410 Gone', () => pm.response.to.have.status(410));",
+              "pm.test('error.code = gone', () => {",
+              "  pm.expect(pm.response.json().error.code).to.eql('gone');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{orderId}}"],
+              "description": "Запускай после DELETE /orders/:id — должен вернуть 410 а не 404"
+            }
+          }
+        },
+
+        {
+          "name": "DELETE /orders/:id — 410 повторное удаление",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('410 Gone при повторном DELETE', () => pm.response.to.have.status(410));",
+              "pm.test('error.code = gone', () => {",
+              "  pm.expect(pm.response.json().error.code).to.eql('gone');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders/{{orderId}}", "host": ["{{baseUrl}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        },
+
+        {
+          "name": "POST /orders — 400 невалидный orderType",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('error.code = badRequest', () => {",
+              "  pm.expect(pm.response.json().error.code).to.eql('badRequest');",
+              "});",
+              "pm.test('error.target указывает на поле orderType', () => {",
+              "  pm.expect(pm.response.json().error.target).to.eql('orderType');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"carrierId\": 2,\n  \"driverId\": 3,\n  \"originCityId\": 1,\n  \"destinationCityId\": 7,\n  \"weightKg\": 7500,\n  \"volumeM3\": 35,\n  \"orderType\": \"invalid_type\",\n  \"loadingDate\": \"2026-07-01\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "POST /orders — 400 вес превышает 20 000 кг",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('400 Bad Request при превышении веса', () => pm.response.to.have.status(400));",
+              "pm.test('error.code = badRequest', () => {",
+              "  pm.expect(pm.response.json().error.code).to.eql('badRequest');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"carrierId\": 2,\n  \"driverId\": 3,\n  \"originCityId\": 1,\n  \"destinationCityId\": 7,\n  \"weightKg\": 20001,\n  \"volumeM3\": 35,\n  \"orderType\": \"direct\",\n  \"loadingDate\": \"2026-07-01\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "POST /orders — 400 отсутствует обязательное поле",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('400 Bad Request при отсутствии поля', () => pm.response.to.have.status(400));",
+              "pm.test('Тело содержит error.code', () => {",
+              "  pm.expect(pm.response.json().error).to.have.property('code');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"carrierId\": 2,\n  \"orderType\": \"direct\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "PUT /orders/:id — 400 невалидный status",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('400 Bad Request при невалидном статусе', () => pm.response.to.have.status(400));",
+              "pm.test('error.target = status', () => {",
+              "  pm.expect(pm.response.json().error.target).to.eql('status');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"flying\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/2", "host": ["{{baseUrl}}"], "path": ["orders", "2"] }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "── БИЗНЕС-ЛОГИКА ───────────────",
+      "item": [
+
+        {
+          "name": "POST — заказ с перевозчиком из ЧС (carrierId=3)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "// Ожидаем 201 — API принимает заказ без проверки is_blacklisted.",
+              "// Это намеренная дыра в бизнес-логике: бэкенд не валидирует статус перевозчика.",
+              "// QA-задача: зафиксировать как баг и обсудить с командой.",
+              "pm.test('201 создан (бизнес-логика не проверяет is_blacklisted)', () => {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "pm.test('carrierId в ответе = 3 (заблокированный перевозчик)', () => {",
+              "  pm.expect(pm.response.json().carrierId).to.eql(3);",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"carrierId\": 3,\n  \"driverId\": 5,\n  \"originCityId\": 2,\n  \"destinationCityId\": 6,\n  \"weightKg\": 5000,\n  \"volumeM3\": 20,\n  \"orderType\": \"tender\",\n  \"loadingDate\": \"2026-07-05\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        },
+
+        {
+          "name": "PUT — идемпотентность (дважды одинаковый PUT)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('status = delivered после обоих вызовов', () => {",
+              "  pm.expect(pm.response.json().status).to.eql('delivered');",
+              "});",
+              "// Запусти этот запрос дважды подряд — результат должен быть одинаковым."
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/2", "host": ["{{baseUrl}}"], "path": ["orders", "2"] }
+          }
+        },
+
+        {
+          "name": "GET /orders — пустой массив если все удалены",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "pm.test('200 OK даже при пустом списке', () => pm.response.to.have.status(200));",
+              "pm.test('Ответ — массив (может быть пустым)', () => {",
+              "  pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}
