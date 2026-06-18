@@ -34,8 +34,6 @@
 
 - GitHub
 - Markdown
-- PostgreSQL
-- Postman
 - ChatGPT / Claude
 
 ## Автор
